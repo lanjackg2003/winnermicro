@@ -1,0 +1,279 @@
+#!/bin/sh
+# Compile the following libs
+STDIO_PATH="C:/Program Files/GNUARM/arm-elf/sys-include"
+cat ../tool_chain.def |grep -q "TOOL_GNU = 0"
+if [ $? -eq 0 ]
+then
+	awk -f changestdio.awk "$STDIO_PATH/stdio.h" "$STDIO_PATH/stdio_1.h"
+	mv "$STDIO_PATH/stdio.h" "$STDIO_PATH/stdio_bk.h"
+	mv "$STDIO_PATH/stdio_1.h" "$STDIO_PATH/stdio.h"
+fi
+
+sed 's/TOOL_GNU = 0/TOOL_GNU = 1/' ../tool_chain.def > temp
+mv -f temp ../tool_chain.def
+sed 's/COST_DOWN = 0/COST_DOWN = 1/' ../tool_chain.def > temp
+mv -f temp ../tool_chain.def
+cd ../../Src/Boot
+make clean;make;
+if [ $? -ne 0 ]; then
+	exit 1
+fi
+cd -
+
+cd ../../Src/Drivers/cpu
+make clean;make;
+if [ $? -ne 0 ]; then
+	exit 1
+fi
+cd -
+
+cd ../../Src/Drivers/irq
+make clean;make;
+if [ $? -ne 0 ]; then
+	exit 1
+fi
+cd -
+
+cd ../../Src/Drivers/timer
+make clean;make;
+if [ $? -ne 0 ]; then
+	exit 1
+fi
+cd -
+
+cd ../../Src/Drivers/efuse
+make clean;make;
+if [ $? -ne 0 ]; then
+	exit 1
+fi
+cd -
+
+cd ../../Src/Drivers/flash
+make clean;make;
+if [ $? -ne 0 ]; then
+	exit 1
+fi
+cd -
+
+cd ../../Src/Drivers/gpio
+make clean;make;
+if [ $? -ne 0 ]; then
+	exit 1
+fi
+cd -
+
+cd ../../Src/Drivers/hspi
+make clean;make;
+if [ $? -ne 0 ]; then
+	exit 1
+fi
+cd -
+
+cd ../../Src/Drivers/spi
+make clean;make;
+if [ $? -ne 0 ]; then
+	exit 1
+fi
+cd -
+
+cd ../../Src/Drivers/uart
+make clean;make;
+if [ $? -ne 0 ]; then
+	exit 1
+fi
+cd -
+
+
+cd ../../Src/Drivers/dma
+make clean;make;
+if [ $? -ne 0 ]; then
+	exit 1
+fi
+cd -
+
+cd ../../Src/Drivers/rtc
+make clean;make;
+if [ $? -ne 0 ]; then
+	exit 1
+fi
+cd -
+
+cd ../../Src/Drivers/pwm
+make clean;make;
+if [ $? -ne 0 ]; then
+	exit 1
+fi
+cd -
+
+cd ../../Src/Network/lwip1.4.1
+make clean;make;
+if [ $? -ne 0 ]; then
+	exit 1
+fi
+cd -
+
+cd ../../Src/Network/api
+make clean;make;
+if [ $? -ne 0 ]; then
+	exit 1
+fi
+cd -
+
+cd ../../Src/Os/uCOS-II
+make clean;make;
+if [ $? -ne 0 ]; then
+	exit 1
+fi
+cd -
+
+cd ../../Src/OS/RTOS
+make clean;make;
+if [ $? -ne 0 ]; then
+	exit 1
+fi
+cd -
+
+cd ../../Src/Os/OS_ports
+make clean;make;
+if [ $? -ne 0 ]; then
+	exit 1
+fi
+cd -
+
+
+cd ../../Src/Sys
+make clean;make;
+if [ $? -ne 0 ]; then
+	exit 1
+fi
+cd -
+
+cd ../../Src/Common/mem
+make clean;make;
+if [ $? -ne 0 ]; then
+	exit 1
+fi
+cd -
+
+cd ../../Src/Common/utils
+make clean;make;
+if [ $? -ne 0 ]; then
+	exit 1
+fi
+cd -
+
+
+
+cd ../../Src/Common/fwup
+make clean;make;
+if [ $? -ne 0 ]; then
+	exit 1
+fi
+cd -
+
+
+cd ../../App/dhcpserver
+make clean;make;
+if [ $? -ne 0 ]; then
+	exit 1
+fi
+cd -
+
+cd ../../App/dnsserver
+make clean;make;
+if [ $? -ne 0 ]; then
+	exit 1
+fi
+cd -
+
+#cd ../../App/iperf
+#make clean;make;
+#if [ $? -ne 0 ]; then
+#	exit 1
+#fi
+#cd -
+
+cd ../../App/httpclient
+make clean;make;
+if [ $? -ne 0 ]; then
+	exit 1
+fi
+cd -
+
+cd ../../App/wm_atcmd
+make clean;make;
+if [ $? -ne 0 ]; then
+	exit 1
+fi
+cd -
+
+cd ../../App/oneshotconfig
+make clean;make;
+if [ $? -ne 0 ]; then
+	exit 1
+fi
+cd -
+
+cd ../../App/demo
+make clean;make;
+if [ $? -ne 0 ]; then
+	exit 1
+fi
+cd -
+
+cd ../../App/ntp
+make clean;make;
+if [ $? -ne 0 ]; then
+	exit 1
+fi
+cd -
+
+cd ../../App/web
+make clean;make;
+if [ $? -ne 0 ]; then
+	exit 1
+fi
+cd -
+
+#cd ../../App/libupnp-1.6.19
+#make clean;make;
+#if [ $? -ne 0 ]; then
+#	exit 1
+#fi
+#cd -
+
+cd ../../App/Expat2.1.0
+make clean;make;
+if [ $? -ne 0 ]; then
+	exit 1
+fi
+cd -
+
+cd ../../App/libjson0.8
+make clean;make;
+if [ $? -ne 0 ]; then
+	exit 1
+fi
+cd -
+
+#cd ../../App/gmediarender-0.0.6
+#make clean;make;
+#if [ $? -ne 0 ]; then
+#	exit 1
+#fi
+#cd -
+
+cd ../../App/sxmlc4.0.5
+make clean;make;
+if [ $? -ne 0 ]; then
+	exit 1
+fi
+cd -
+
+cd ../../App/matrixssl
+make clean;make;
+if [ $? -ne 0 ]; then
+	exit 1
+fi
+cd -
+make clean;make

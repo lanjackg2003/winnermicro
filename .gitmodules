@@ -1,0 +1,6 @@
+[submodule "App/Adapter/ZC"]
+	path = App/Adapter/ZC
+	url = git@github.com:sdhczw/ZC.git
+[submodule "App/Adapter/AC"]
+	path = App/Adapter/AC
+	url = git@github.com:sdhczw/AC.git
