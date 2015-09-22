@@ -51,9 +51,9 @@ u32 g_u32BcSleepCount;
 struct sockaddr_in struRemoteAddr;
 
 #define TASK_HF_Cloudfunc_STK_SIZE           400            /* Size of each task's stacks (# of WORDs)  */
-#define TASK_HF_CloudRecvfunc_STK_SIZE       200
+
 OS_STK TaskHFCloudfuncStk[TASK_HF_Cloudfunc_STK_SIZE];        /* Tasks stacks */
-OS_STK TaskHFCloudRecvfuncStk[TASK_HF_CloudRecvfunc_STK_SIZE];
+
 
 u32 g_u32session_id;
 
@@ -264,9 +264,20 @@ u32 HF_FirmwareUpdate(u8 *pu8FileData, u32 u32Offset, u32 u32DataLen)
 *************************************************/
 u32 HF_SendDataToMoudle(u8 *pu8Data, u16 u16DataLen)
 {
-	u8 u8MagicFlag[4] = {0x02,0x03,0x04,0x05};
+#ifdef ZC_MODULE_DEV
+    tls_os_status_t Status;
+    u8*msg  = tls_mem_alloc(u16DataLen);
+    MEMCPY(msg,pu8Data,u16DataLen);
+    Status = tls_os_queue_send(App_R_Q, msg, u16DataLen);
+    if(Status)
+    {
+        ZC_Printf("fengq: send message error!\n");
+    }
+#else
+  	u8 u8MagicFlag[4] = {0x02,0x03,0x04,0x05};
     tls_uart_tx((char*)u8MagicFlag,4); 
-    tls_uart_tx((char *)pu8Data, u16DataLen);
+    tls_uart_tx((char *)pu8Data, u16DataLen);  
+#endif      
     return ZC_RET_OK;
 }
 
@@ -348,7 +359,6 @@ void HF_CloudRecvfunc(void* arg)
     int tmp=1;
     s8 s8ret = 0;
     
-    tls_os_time_delay(10);
     ZC_StartClientListen();
 
     u32ActiveFlag = 0;
@@ -705,7 +715,6 @@ void HF_Cloudfunc(void* arg)
 void HF_Init()
 {
     tls_os_status_t status;
-    ZC_Printf("MT Init\n");
     g_struHfAdapter.pfunConnectToCloud = HF_ConnectToCloud;
     g_struHfAdapter.pfunListenClient = HF_ListenClient;
     g_struHfAdapter.pfunSendTcpData = HF_SendTcpData;
@@ -721,6 +730,9 @@ void HF_Init()
     g_struHfAdapter.pfunGetMac = HF_GetMac;
     g_struHfAdapter.pfunReboot = HF_Reboot;
     
+    g_struHfAdapter.pfunPrintf = (pFunPrintf)printf;
+    g_struHfAdapter.pfunMalloc = malloc;
+    g_struHfAdapter.pfunFree = free;
     g_u16TcpMss = 1000;
     PCT_Init(&g_struHfAdapter);
 
@@ -729,20 +741,13 @@ void HF_Init()
 
     status = tls_os_task_create(NULL, NULL, HF_Cloudfunc, (void *)0,
                            (void *)TaskHFCloudfuncStk, TASK_HF_Cloudfunc_STK_SIZE * sizeof(u32),
-                           50, 0);
+                            50, 0);
+   ZC_Printf("MT Init\n"); 
     if(status)
     {
         ZC_Printf("fengq: create HF_Cloudfunc task error!\n");
     }
-#if 0
-    status = tls_os_task_create(NULL, NULL, HF_CloudRecvfunc, (void *)0,
-                            (void *)TaskHFCloudRecvfuncStk, TASK_HF_CloudRecvfunc_STK_SIZE * sizeof(u32),
-                            31, 0);
-    if(status)
-    {
-        ZC_Printf("fengq: create HF_CloudRecvfunc task error!\n");
-    }
-#endif
+
     status = tls_os_sem_create(&g_struTimermutex, 1);
     if(status)
     {

@@ -91,7 +91,8 @@ OS_STK      TaskStartStk[TASK_START_STK_SIZE];         /* Tasks stacks */
 
 #define FW_MAJOR_VER           0x01
 #define FW_MINOR_VER           0x02
-#define FW_PATCH_VER           0x15
+#define FW_PATCH_VER           0x25
+
 
 const char FirmWareVer[4] = {
     'G',
@@ -109,7 +110,7 @@ const char HwVer[6] = {
 };
 extern const char WiFiVer[];
 extern u8 tx_gain_group[];
-extern void *tls_wl_init(u8 *tx_gain, u8* mac_addr);
+extern void *tls_wl_init(u8 *tx_gain, u8* mac_addr, u8 *hwver);
 extern int wpa_supplicant_init(u8 *mac_addr);
 extern void tls_sys_auto_mode_run(void);
 
@@ -130,67 +131,6 @@ static void tls_main_net_status_changed(u8 status)
             break;
         default:
             break;
-    }
-}
-
-static void BlinkTimerProc(void *ptmr, void *parg)
-{
-    #define HIO_LINK    13
-    static u32 div_blink = 0;
-    static u32 mode_blink = 0;
-    u32 blink[][2] = {
-    /************************************************
-           |<--------blink------->|
-           |<--light-->|
-           |-----------|          |-----------|
-           |           |          |           |
-        ---|           |----------|           |---
-        blink | light
-    *************************************************/
-        {22, 2},    /* mode = 0 */
-        {10, 5},    /* mode = 1 */
-        {2, 1},     /* mode = 2 */
-    };
-    u32 mode;
-
-    mode = net_up_status?1:0;
-    if(tls_fwup_get_status())
-    {
-        mode = 2;
-    }
-
-    if (mode != mode_blink)
-    {
-        mode_blink = mode;
-        div_blink = 0;
-    }
-    tls_gpio_cfg(HIO_LINK, TLS_GPIO_DIR_OUTPUT, TLS_GPIO_ATTR_FLOATING);
-    if(blink[mode_blink][0] == 0)
-    {
-        if (blink[mode_blink][1] == 0)
-        {
-            tls_gpio_write(HIO_LINK, 0);
-        }
-        else
-        {
-            tls_gpio_write(HIO_LINK, 1);
-        }
-    }
-    else
-    {
-        ++div_blink;
-        if (div_blink <= blink[mode_blink][1])
-        {
-            tls_gpio_write(HIO_LINK, 1);
-        }
-        else if (div_blink <= blink[mode_blink][0])
-        {
-            tls_gpio_write(HIO_LINK, 0);
-        }
-        else
-        {
-            div_blink = 0;
-        }
     }
 }
 
@@ -286,6 +226,7 @@ void task_start (void *data)
     extern void  RestoreParamToDefault(void);
     int err = 0;
     u8 mac_addr[6];
+	u8 hw_ver[6];
 
 
 #if TLS_OS_UCOS
@@ -321,13 +262,13 @@ void task_start (void *data)
     /* 读取efuse中的mac地址 */
     tls_get_mac_addr(mac_addr);
     tls_get_tx_gain(tx_gain_group);
-
+	tls_get_hw_version(hw_ver);
     TLS_DBGPRT_INFO("tx gain ");
     TLS_DBGPRT_DUMP((char *)(&tx_gain_group[0]), 12);
     TLS_DBGPRT_INFO("mac addr ");
     TLS_DBGPRT_DUMP((char *)(&mac_addr[0]), 6);
 
-    if(tls_wl_init(NULL, &mac_addr[0]) == NULL){
+    if(tls_wl_init(NULL, &mac_addr[0], &hw_ver[0]) == NULL){
         TLS_DBGPRT_INFO("wl driver initial failured\n");
     }
     if (wpa_supplicant_init(mac_addr)) {

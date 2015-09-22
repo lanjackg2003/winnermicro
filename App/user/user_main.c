@@ -39,7 +39,6 @@ extern void ZC_Moudlefunc(u8 *pu8Data, u32 u32DataLen);
 ****************************************************************************/
 void UserDeviceInit(void)
 {
-    tls_os_timer_t *KeyScanTimer = NULL;
     INT8S autoconnect;
 
     memset((void *)&gstUserDeviceInfo, 0, sizeof(USER_DEVICE_INFO));
@@ -51,42 +50,11 @@ void UserDeviceInit(void)
         // 设置自动重连
         tls_wifi_auto_connect_flag(WIFI_AUTO_CNT_FLAG_SET, &autoconnect);
     }
-    // timer
-    tls_os_timer_create(&KeyScanTimer, KeyScanTimerProc, NULL, KEY_SCAN_TIME, TRUE, NULL);
-    tls_os_timer_start(KeyScanTimer);
+
     // create static user task
     CreateUserTask();
 }
-/***************************************************************************
-* Description: 键盘扫描处理
-*
-* Auth: houxf
-*
-*Date: 2015-3-31
-****************************************************************************/
-static void KeyScanTimerProc(void)
-{
-    INT16U KeyValue;
 
-    tls_gpio_cfg(KEY_IO_ONESHOT, TLS_GPIO_DIR_INPUT, TLS_GPIO_ATTR_PULLLOW);
-    gsKeyStatus = tls_gpio_read(KEY_IO_ONESHOT);
-    if(gsKeyStatus)
-    {
-        if(gsKeyPreStatus != gsKeyStatus)
-        {
-            gsKeyPreStatus = gsKeyStatus;
-            tls_os_queue_send(gsUserTaskQueue, (void *)MSG_ONESHOT, 0);
-            printf("houxf debug oneshot key pressed \r\n");
-        }
-    }
-    else
-    {
-        if(gsKeyPreStatus != gsKeyStatus)
-        {
-            gsKeyPreStatus = gsKeyStatus = 0;
-        }
-    }
-}
 /***************************************************************************
 * Description:udp 广播timer处理函数
 *
@@ -145,39 +113,6 @@ static int CreateUserTask(void)
     return WM_SUCCESS;
 }
 
-/*************************************************************************** 
-* Description:打印函数
-* Auth: houxf
-*
-*Date: 2015-3-31
-****************************************************************************/ 
-void ZC_TraceData1(u8* pData, u32 Len)
-{
-    u32 Index;
-    if (0 == Len)
-    {
-        return;
-    }
-    
-    ZC_Printf("++++++++++++++++++++++++++++++++++++++++++++++++\n");
-    for (Index = 0; Index + 4 < Len; Index = Index + 4)
-    {
-        ZC_Printf("0x%02x, 0x%02x, 0x%02x, 0x%02x,\n",
-            pData[Index],
-            pData[Index + 1],
-            pData[Index + 2],
-            pData[Index + 3]);
-    }
-    
-    for (; Index < Len - 1; Index++)
-    {
-        ZC_Printf("0x%02x, ", pData[Index]);
-    }
-    ZC_Printf("0x%02x", pData[Index]);
-
-    ZC_Printf("\n++++++++++++++++++++++++++++++++++++++++++++++++\n");
-}
-
 /***************************************************************************
 * Description: 用户任务处理回调函数
 *
@@ -188,6 +123,7 @@ void ZC_TraceData1(u8* pData, u32 Len)
 static void UserTaskProc(void)
 {
     void *msg;
+    struct tls_ethif * ethif;
 // 配置用户串口
     tls_user_uart_set_baud_rate(USER_UART_BAUDRATE);
     tls_uart_cfg_user_mode();
@@ -201,6 +137,10 @@ static void UserTaskProc(void)
         {
             case MSG_NET_UP:                // 加网成功
                 printf("fengq: MSG_NET_UP\n");
+                ethif = tls_netif_get_ethif();
+			    printf("\nip=%d.%d.%d.%d\n",ip4_addr1(&ethif->ip_addr.addr),ip4_addr2(&ethif->ip_addr.addr),
+		        ip4_addr3(&ethif->ip_addr.addr),ip4_addr4(&ethif->ip_addr.addr));
+                memcpy(&g_u32GloablIp,ethif->ip_addr.addr,4);
                 HF_WakeUp();
                 break;
 
@@ -236,39 +176,13 @@ static void UserTaskProc(void)
                 break;
             case MSG_UART_RX_DATA:
 			uart_proc_data();
-							 // ZC_TraceData1((u8 *)msg,len);
-	             // ZC_Moudlefunc((u8 *)msg,len);
 			break;
             default:
                 break;
         }
     }
 }
-/***************************************************************************
-* Description: udp 广播发送数据三次
-*
-* Auth: houxf
-*
-*Date: 2015-3-31
-****************************************************************************/
-static void StdUdpBroadCast(INT8U *buff, INT16U len)
-{
-    struct sockaddr_in pin;
-    int idx;
-    int socket_num;
 
-    memset(&pin, 0, sizeof(struct sockaddr));
-    pin.sin_family = AF_INET;                           //AF_INET表示使用IPv4
-    pin.sin_addr.s_addr = htonl(0xffffffffUL);      //IPADDR_BROADCAST
-    pin.sin_port = htons(UDP_BROAD_PORT);
-    socket_num = socket(AF_INET, SOCK_DGRAM, IPPROTO_UDP);
-    for(idx = 0; idx < 3; idx++)
-    {
-        sendto(socket_num, buff, len, 0, (struct sockaddr *)&pin, sizeof(struct sockaddr));
-        tls_os_time_delay(10);
-    }
-    closesocket(socket_num);
-}
 /*************************************************************************** 
 * Description:串口接收回调函数
 * Auth: houxf

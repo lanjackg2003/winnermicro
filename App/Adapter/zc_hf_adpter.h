@@ -24,7 +24,7 @@ typedef struct
 }HF_TimerInfo;
 
 
-#define HF_MAX_SOCKET_LEN    (1000)
+#define HF_MAX_SOCKET_LEN    (600)
 
 
 

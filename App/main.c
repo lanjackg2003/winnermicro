@@ -13,6 +13,7 @@
 *****************************************************************************/
 #include "wm_include.h"
 #include <zc_hf_adpter.h>
+#include "ac_api.h"
 extern tls_os_sem_t    *libc_sem;
 int main(void)
 {
@@ -28,11 +29,11 @@ int main(void)
 
     return 0;
 }
-#define APP_R_Q_SIZE                          32
+#define APP_R_Q_SIZE                          3
 tls_os_queue_t *App_R_Q = NULL;
 void *App_R_Queue[APP_R_Q_SIZE];
 
-//#define APP_S_Q_SIZE                          32
+//#define APP_S_Q_SIZE                          2
 //tls_os_queue_t *App_S_Q = NULL;
 //void *App_S_Queue[APP_S_Q_SIZE];
 
@@ -43,7 +44,7 @@ void AppTask(void* arg);
 extern void UserDeviceInit(void);
 void CreateUserTask(void)
 {
-
+    tls_os_status_t Status;
     printf("\n user task\n");
     UserDeviceInit();
 #if DEMO_CONSOLE
@@ -53,8 +54,46 @@ void CreateUserTask(void)
 //    HF_Rest();
     HF_Init();
     HF_ReadDataFromFlash();
+    
+
+    // 创建应用任务的接受消息队列
+    Status = tls_os_queue_create(&App_R_Q,
+                             &App_R_Queue[0],
+                             APP_R_Q_SIZE, 0);
+    if(Status)
+    {
+        printf("fengq: create receive message queue error!\n");
+    }
+ #if 1   
+    // 创建应用任务
+    Status = tls_os_task_create(NULL, NULL, AppTask, (void *)0,
+                            (void *)AppTaskStk, AppTask_STK_SIZE * sizeof(u32),
+                            31, 0);
+
+    if(Status)
+    {
+        printf("fengq: create task error!\n");
+    }
+    #endif
 }
 
+void AppTask(void* arg)
+{
+    ZC_MessageHead *pstruMsg;
+    tls_os_status_t Status;
+
+    while(1)
+    {
+        Status = tls_os_queue_receive(App_R_Q, (void **)&pstruMsg, 0, 0);
+        if(Status)
+        {
+            printf("app: receive message error!\n");
+        }
+
+        AC_RecvMessage(pstruMsg);
+        tls_mem_free(pstruMsg);
+    }
+}
 
 void RestoreParamToDefault(void)
 {
