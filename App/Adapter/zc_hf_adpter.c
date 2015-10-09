@@ -46,7 +46,7 @@ u8 g_u8recvbuffer[HF_MAX_SOCKET_LEN];
 ZC_UartBuffer g_struUartBuffer;
 HF_TimerInfo g_struHfTimer[ZC_TIMER_MAX_NUM];
 tls_os_sem_t *g_struTimermutex;
-u8  g_u8BcSendBuffer[100];
+u8  g_u8BcSendBuffer[60];
 u32 g_u32BcSleepCount;
 struct sockaddr_in struRemoteAddr;
 
@@ -164,7 +164,6 @@ void HF_timer_callback(void *ptmr, void *parg)
 *************************************************/
 void HF_StopTimer(u8 u8TimerIndex)
 {
-    //tls_os_timer_stop(g_struHfTimer[u8TimerIndex].struHandle);
     tls_os_timer_Del(g_struHfTimer[u8TimerIndex].struHandle);
 }
 
@@ -654,7 +653,7 @@ void HF_BcInit(void)
     struRemoteAddr.sin_port = htons(ZC_MOUDLE_BROADCAST_PORT);
     struRemoteAddr.sin_addr.s_addr=inet_addr("255.255.255.255");
     g_pu8RemoteAddr = (u8*)&struRemoteAddr;
-    g_u32BcSleepCount = 10;
+    g_u32BcSleepCount = 8;
 
     return;
 }

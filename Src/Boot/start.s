@@ -52,7 +52,7 @@ Stack_Top
 ;//   <o>  Heap Size (in Bytes) <0x0-0xFFFFFFFF>
 ;// </h>
   IF :DEF: DEBUG
-Heap_Size       EQU     0x0000C000
+Heap_Size       EQU     0x0000B000
   ELSE
 Heap_Size       EQU     0x0000D000
   ENDIF

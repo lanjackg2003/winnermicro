@@ -335,7 +335,7 @@
           </ArmAdsMisc>
           <Cads>
             <interw>1</interw>
-            <Optim>4</Optim>
+            <Optim>3</Optim>
             <oTime>0</oTime>
             <SplitLS>0</SplitLS>
             <OneElfS>0</OneElfS>
@@ -349,7 +349,7 @@
             <uSurpInc>0</uSurpInc>
             <VariousControls>
               <MiscControls>--c99 --gnu </MiscControls>
-              <Define>ZC_MODULE_VERSION=0 ZC_MODULE_TYPE=1 xZC_MODULE_DEV</Define>
+              <Define>ZC_MODULE_VERSION=0 ZC_MODULE_TYPE=1 ZC_MODULE_DEV</Define>
               <Undefine></Undefine>
               <IncludePath>..\..\..\Src\Drivers;..\..\..\Src\Drivers\dma;..\..\..\Src\Drivers\efuse;..\..\..\Src\Drivers\flash;..\..\..\Src\Drivers\gpio;..\..\..\Src\Drivers\hspi;..\..\..\Src\Drivers\litepoint;..\..\..\Src\Drivers\spi;..\..\..\Src\Drivers\timer;..\..\..\Src\Drivers\uart;..\..\..\Src\Drivers\watchdog;..\..\..\Src\Misc;..\..\..\Src\Network\lwip1.4.1;..\..\..\Src\Network\lwip1.4.1\include;..\..\..\Src\Network\lwip1.4.1\include\arch;..\..\..\Src\Network\lwip1.4.1\include\ipv4;..\..\..\Src\Network\lwip1.4.1\include\ipv4\lwip;..\..\..\Src\Network\lwip1.4.1\include\lwip;..\..\..\Src\Network\lwip1.4.1\include\netif;..\..\..\Src\OS\uCOS-II\ports;..\..\..\Src\OS\uCOS-II\source;..\..\..\Src\Wlan\Driver;..\..\..\Src\Wlan\Supplicant;..\..\..\Include;..\..\..\Src\Inc;..\..\..\Src\Sys;..\..\..\Src\Network\api;..\..\..\App\wm_atcmd;..\..\..\App\demo;..\..\..\Src\Common\Params;..\..\..\Src\Drivers\litepoint;..\..\..\App\dhcpserver;..\..\..\App\dnsserver;..\..\..\App\matrixssl;..\..\..\App\matrixssl\crypto;..\..\..\App\web;..\..\..\Src\OS\RTOS\include;..\..\..\App\cloud;..\..\..\App\cJSON;..\..\..\App\Adapter;..\..\..\App\Adapter\AC\inc;..\..\..\App\Adapter\aes;..\..\..\App\Adapter\ZC\inc\tropicssl;..\..\..\App\Adapter\ZC\inc\zc</IncludePath>
             </VariousControls>
@@ -389,141 +389,6 @@
         </TargetArmAds>
       </TargetOption>
       <Groups>
-        <Group>
-          <GroupName>App/Demo</GroupName>
-          <Files>
-            <File>
-              <FileName>wm_connect_net_demo.c</FileName>
-              <FileType>1</FileType>
-              <FilePath>..\..\..\App\demo\wm_connect_net_demo.c</FilePath>
-            </File>
-            <File>
-              <FileName>wm_crypt_demo.c</FileName>
-              <FileType>1</FileType>
-              <FilePath>..\..\..\App\demo\wm_crypt_demo.c</FilePath>
-            </File>
-            <File>
-              <FileName>wm_demo_console_task.c</FileName>
-              <FileType>1</FileType>
-              <FilePath>..\..\..\App\demo\wm_demo_console_task.c</FilePath>
-            </File>
-            <File>
-              <FileName>wm_flash_demo.c</FileName>
-              <FileType>1</FileType>
-              <FilePath>..\..\..\App\demo\wm_flash_demo.c</FilePath>
-            </File>
-            <File>
-              <FileName>wm_gpio_demo.c</FileName>
-              <FileType>1</FileType>
-              <FilePath>..\..\..\App\demo\wm_gpio_demo.c</FilePath>
-            </File>
-            <File>
-              <FileName>wm_http_demo.c</FileName>
-              <FileType>1</FileType>
-              <FilePath>..\..\..\App\demo\wm_http_demo.c</FilePath>
-            </File>
-            <File>
-              <FileName>wm_http_fwup.c</FileName>
-              <FileType>1</FileType>
-              <FilePath>..\..\..\App\demo\wm_http_fwup.c</FilePath>
-            </File>
-            <File>
-              <FileName>wm_master_spi_demo.c</FileName>
-              <FileType>1</FileType>
-              <FilePath>..\..\..\App\demo\wm_master_spi_demo.c</FilePath>
-            </File>
-            <File>
-              <FileName>wm_mcast_demo.c</FileName>
-              <FileType>1</FileType>
-              <FilePath>..\..\..\App\demo\wm_mcast_demo.c</FilePath>
-            </File>
-            <File>
-              <FileName>wm_raw_socket_client_demo.c</FileName>
-              <FileType>1</FileType>
-              <FilePath>..\..\..\App\demo\wm_raw_socket_client_demo.c</FilePath>
-            </File>
-            <File>
-              <FileName>wm_raw_socket_server_demo.c</FileName>
-              <FileType>1</FileType>
-              <FilePath>..\..\..\App\demo\wm_raw_socket_server_demo.c</FilePath>
-            </File>
-            <File>
-              <FileName>wm_slave_spi_demo.c</FileName>
-              <FileType>1</FileType>
-              <FilePath>..\..\..\App\demo\wm_slave_spi_demo.c</FilePath>
-            </File>
-            <File>
-              <FileName>wm_socket_client_demo.c</FileName>
-              <FileType>1</FileType>
-              <FilePath>..\..\..\App\demo\wm_socket_client_demo.c</FilePath>
-            </File>
-            <File>
-              <FileName>wm_socket_fwup.c</FileName>
-              <FileType>1</FileType>
-              <FilePath>..\..\..\App\demo\wm_socket_fwup.c</FilePath>
-            </File>
-            <File>
-              <FileName>wm_socket_fwup_demo.c</FileName>
-              <FileType>1</FileType>
-              <FilePath>..\..\..\App\demo\wm_socket_fwup_demo.c</FilePath>
-            </File>
-            <File>
-              <FileName>wm_socket_server_demo.c</FileName>
-              <FileType>1</FileType>
-              <FilePath>..\..\..\App\demo\wm_socket_server_demo.c</FilePath>
-            </File>
-            <File>
-              <FileName>wm_socket_server_sel_demo.c</FileName>
-              <FileType>1</FileType>
-              <FilePath>..\..\..\App\demo\wm_socket_server_sel_demo.c</FilePath>
-            </File>
-            <File>
-              <FileName>wm_softap_demo.c</FileName>
-              <FileType>1</FileType>
-              <FilePath>..\..\..\App\demo\wm_softap_demo.c</FilePath>
-            </File>
-            <File>
-              <FileName>wm_uart_demo.c</FileName>
-              <FileType>1</FileType>
-              <FilePath>..\..\..\App\demo\wm_uart_demo.c</FilePath>
-            </File>
-            <File>
-              <FileName>wm_wps_demo.c</FileName>
-              <FileType>1</FileType>
-              <FilePath>..\..\..\App\demo\wm_wps_demo.c</FilePath>
-            </File>
-            <File>
-              <FileName>wm_adc_demo.c</FileName>
-              <FileType>1</FileType>
-              <FilePath>..\..\..\App\demo\wm_adc_demo.c</FilePath>
-            </File>
-            <File>
-              <FileName>wm_i2c_demo.c</FileName>
-              <FileType>1</FileType>
-              <FilePath>..\..\..\App\demo\wm_i2c_demo.c</FilePath>
-            </File>
-            <File>
-              <FileName>wm_pwm_demo.c</FileName>
-              <FileType>1</FileType>
-              <FilePath>..\..\..\App\demo\wm_pwm_demo.c</FilePath>
-            </File>
-            <File>
-              <FileName>wm_ntp_demo.c</FileName>
-              <FileType>1</FileType>
-              <FilePath>..\..\..\App\demo\wm_ntp_demo.c</FilePath>
-            </File>
-            <File>
-              <FileName>wm_dlna_mediarender_demo_vs1053.c</FileName>
-              <FileType>1</FileType>
-              <FilePath>..\..\..\App\demo\wm_dlna_mediarender_demo_vs1053.c</FilePath>
-            </File>
-            <File>
-              <FileName>Wm_cloud_demo.c</FileName>
-              <FileType>1</FileType>
-              <FilePath>..\..\..\App\demo\Wm_cloud_demo.c</FilePath>
-            </File>
-          </Files>
-        </Group>
         <Group>
           <GroupName>App/httpClient</GroupName>
           <Files>
@@ -606,56 +471,6 @@
               <FileName>wm_wifi_oneshot.c</FileName>
               <FileType>1</FileType>
               <FilePath>..\..\..\App\oneshotconfig\wm_wifi_oneshot.c</FilePath>
-            </File>
-          </Files>
-        </Group>
-        <Group>
-          <GroupName>App/libjson0.8</GroupName>
-          <Files>
-            <File>
-              <FileName>json.c</FileName>
-              <FileType>1</FileType>
-              <FilePath>..\..\..\App\libjson0.8\json.c</FilePath>
-            </File>
-          </Files>
-        </Group>
-        <Group>
-          <GroupName>App/web</GroupName>
-          <Files>
-            <File>
-              <FileName>httpd.c</FileName>
-              <FileType>1</FileType>
-              <FilePath>..\..\..\App\web\httpd.c</FilePath>
-            </File>
-            <File>
-              <FileName>web.c</FileName>
-              <FileType>1</FileType>
-              <FilePath>..\..\..\App\web\web.c</FilePath>
-            </File>
-            <File>
-              <FileName>fs.c</FileName>
-              <FileType>1</FileType>
-              <FilePath>..\..\..\App\web\fs.c</FilePath>
-            </File>
-          </Files>
-        </Group>
-        <Group>
-          <GroupName>App/cJSON</GroupName>
-          <Files>
-            <File>
-              <FileName>cJSON.c</FileName>
-              <FileType>1</FileType>
-              <FilePath>..\..\..\App\cJSON\cJSON.c</FilePath>
-            </File>
-          </Files>
-        </Group>
-        <Group>
-          <GroupName>App/ntp</GroupName>
-          <Files>
-            <File>
-              <FileName>ntp_client.c</FileName>
-              <FileType>1</FileType>
-              <FilePath>..\..\..\App\ntp\ntp_client.c</FilePath>
             </File>
           </Files>
         </Group>
@@ -786,31 +601,6 @@
               <FileName>clock.c</FileName>
               <FileType>1</FileType>
               <FilePath>..\..\..\Src\OS\os_ports\clock.c</FilePath>
-            </File>
-          </Files>
-        </Group>
-        <Group>
-          <GroupName>Src/ucosII/source</GroupName>
-          <Files>
-            <File>
-              <FileName>ucos_ii.c</FileName>
-              <FileType>1</FileType>
-              <FilePath>..\..\..\Src\OS\uCOS-II\source\ucos_ii.c</FilePath>
-            </File>
-          </Files>
-        </Group>
-        <Group>
-          <GroupName>Src/ucosII/ports</GroupName>
-          <Files>
-            <File>
-              <FileName>os_cpu_c.c</FileName>
-              <FileType>1</FileType>
-              <FilePath>..\..\..\Src\OS\uCOS-II\ports\os_cpu_c.c</FilePath>
-            </File>
-            <File>
-              <FileName>os_cpu_a.s</FileName>
-              <FileType>2</FileType>
-              <FilePath>..\..\..\Src\OS\uCOS-II\ports\os_cpu_a.s</FilePath>
             </File>
           </Files>
         </Group>
@@ -1011,16 +801,6 @@
               <FileName>wm_rtc.c</FileName>
               <FileType>1</FileType>
               <FilePath>..\..\..\Src\Drivers\rtc\wm_rtc.c</FilePath>
-            </File>
-          </Files>
-        </Group>
-        <Group>
-          <GroupName>Src/Drivers/VS10XX</GroupName>
-          <Files>
-            <File>
-              <FileName>VS10XX.c</FileName>
-              <FileType>1</FileType>
-              <FilePath>..\..\..\Src\Drivers\VS10XX\VS10XX.c</FilePath>
             </File>
           </Files>
         </Group>

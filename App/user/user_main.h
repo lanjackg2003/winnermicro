@@ -19,7 +19,7 @@
 #include "wm_sockets.h"
 
 #define USER_QUEUE_SIZE				64		// 用户消息队列的size
-#define USER_TASK_SIZE					1024	// 用户任务栈的size
+#define USER_TASK_SIZE					512	// 用户任务栈的size
 #define USER_TASK_PRO					50		// 用户任务优先级
 
 #define KEY_SCAN_TIME					50		// 一键配置按键扫描时间500ms

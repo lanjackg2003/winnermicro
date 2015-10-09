@@ -19,8 +19,8 @@
 #include "list.h"
 #include "wm_osal.h"
 
-#define TLS_UART_RX_BUF_SIZE   4096
-#define TLS_UART_TX_BUF_SIZE   4096
+#define TLS_UART_RX_BUF_SIZE   1024
+#define TLS_UART_TX_BUF_SIZE   1024
 #define WAKEUP_CHARS           256
 
 #define MBOX_MSG_UART_RX       1
