@@ -1,5 +1,6 @@
 #include "user_main.h"
 #include "zc_hf_adpter.h"
+#include "ac_hal.h"
 // user data
 static USER_DEVICE_INFO gstUserDeviceInfo;
 // task
@@ -9,24 +10,20 @@ static OS_STK UserTaskStk[USER_TASK_SIZE];
 // key scan
 static u8 gsKeyPreStatus = 0;
 static u8 gsKeyStatus = 0;
-
+tls_os_timer_t * KeyScanTimer;
 // tcp client param
 #define TCP_REMOTE_PORT 1000                // 用户tcp client 连接远程端口
-static u8 TcpRemoteIp[4] = {192,168,31,168};            // TCP 远程服务器的IP
-static struct tls_socket_desc raw_socket_c_desc;        // socket client info
 
 // tcp server param
 #define TCP_LOCAL_PORT      2000                // 用户tcp server 本地监听端口
-struct tls_socket_desc raw_socket_s_desc;           // socket server info
 
 // udp broadcast param
 #define UDP_BROAD_PORT  65534               // udp 广播端口号
 
-static void KeyScanTimerProc(void);
-static void UdpBroadTimerProc(void);
+static void KeyScanTimerProc(void *ptmr, void *parg);
 static void UserWlanStatusChangedEvent(INT8U status);
 static int CreateUserTask(void);
-static void UserTaskProc(void);
+static void UserTaskProc(void *);
 static void uart_proc_data(void);
 static INT16S UserUartRxCallback(char *buf, u16 len);
 extern void ZC_Moudlefunc(u8 *pu8Data, u32 u32DataLen); 
@@ -39,7 +36,7 @@ extern void ZC_Moudlefunc(u8 *pu8Data, u32 u32DataLen);
 ****************************************************************************/
 void UserDeviceInit(void)
 {
-    INT8S autoconnect;
+    u8 autoconnect;
 
     memset((void *)&gstUserDeviceInfo, 0, sizeof(USER_DEVICE_INFO));
     // check autoconnect
@@ -50,22 +47,42 @@ void UserDeviceInit(void)
         // 设置自动重连
         tls_wifi_auto_connect_flag(WIFI_AUTO_CNT_FLAG_SET, &autoconnect);
     }
-
+    
+// timer	
+	tls_os_timer_create(&KeyScanTimer, KeyScanTimerProc, NULL, KEY_SCAN_TIME, TRUE, NULL);
+	tls_os_timer_start(KeyScanTimer);	
     // create static user task
     CreateUserTask();
+     //printf("CreateUserTask2\r\n");
 }
 
-/***************************************************************************
-* Description:udp 广播timer处理函数
+/*************************************************************************** 
+* Description: 键盘扫描处理
 *
 * Auth: houxf
 *
 *Date: 2015-3-31
-****************************************************************************/
-static void UdpBroadTimerProc(void)
-{
-    tls_os_queue_send(gsUserTaskQueue, (void *)MSG_TIMER, 0);
+****************************************************************************/ 
+static void KeyScanTimerProc(void *ptmr, void *parg)
+{	
+	tls_gpio_cfg(KEY_IO_ONESHOT, TLS_GPIO_DIR_INPUT, TLS_GPIO_ATTR_PULLLOW);
+	gsKeyStatus = tls_gpio_read(KEY_IO_ONESHOT);
+	if(gsKeyStatus)
+	{
+		if(gsKeyPreStatus != gsKeyStatus)
+		{
+			gsKeyPreStatus = gsKeyStatus;
+			tls_os_queue_send(gsUserTaskQueue, (void *)MSG_ONESHOT, 0);		}
+	}
+	else
+	{
+		if(gsKeyPreStatus != gsKeyStatus)
+		{
+			gsKeyPreStatus = gsKeyStatus = 0;
+		}
+	}
 }
+
 /***************************************************************************
 * Description: 网络状态变化回调函数
 *
@@ -120,7 +137,7 @@ static int CreateUserTask(void)
 *
 *Date: 2015-3-31
 ****************************************************************************/
-static void UserTaskProc(void)
+static void UserTaskProc(void * args)
 {
     void *msg;
     struct tls_ethif * ethif;
@@ -140,7 +157,8 @@ static void UserTaskProc(void)
                 ethif = tls_netif_get_ethif();
 			    printf("\nip=%d.%d.%d.%d\n",ip4_addr1(&ethif->ip_addr.addr),ip4_addr2(&ethif->ip_addr.addr),
 		        ip4_addr3(&ethif->ip_addr.addr),ip4_addr4(&ethif->ip_addr.addr));
-                memcpy(&g_u32GloablIp,ethif->ip_addr.addr,4);
+                memcpy(&g_u32GloablIp,&ethif->ip_addr.addr,4);
+                g_u32GloablIp = ZC_HTONL(g_u32GloablIp);
                 HF_WakeUp();
                 break;
 
@@ -153,7 +171,8 @@ static void UserTaskProc(void)
 
             case MSG_ONESHOT:               // 启动一键配置
                 printf("fengq: MSG_ONESHOT\n");
-                tls_wifi_set_oneshot_flag(1);
+                //tls_wifi_set_oneshot_flag(1);
+                AC_SendRestMsg();
                 break;
 
             case MSG_SK_CLIENT_ERR:         // socket 断开
@@ -195,7 +214,7 @@ static INT16S UserUartRxCallback(char *buf, u16 len)
 	INT16U size;
 	INT16U wcount;
 //    printf("URC=%d\r\n",len);
-    if(len == 0){return;}
+    if(len == 0){return 0;}
 	if(gstUserDeviceInfo.wptr > gstUserDeviceInfo.rptr)
 	{
 		size = TCP_TXBUFF_MAX - gstUserDeviceInfo.wptr + gstUserDeviceInfo.rptr;
@@ -289,7 +308,11 @@ static void uart_proc_data(void)
 
 	//if(gstUserDeviceInfo.MsgNum)
 	{     
+#ifdef ZC_EASY_UART 
+        AC_UartRecv(gstUserDeviceInfo.tx_buff, len);  
+#else
         ZC_Moudlefunc(gstUserDeviceInfo.tx_buff, len);
+#endif
 		//gstUserDeviceInfo.MsgNum--;
 	}
 }

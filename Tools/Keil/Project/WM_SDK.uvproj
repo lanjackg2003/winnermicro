@@ -335,7 +335,7 @@
           </ArmAdsMisc>
           <Cads>
             <interw>1</interw>
-            <Optim>3</Optim>
+            <Optim>0</Optim>
             <oTime>0</oTime>
             <SplitLS>0</SplitLS>
             <OneElfS>0</OneElfS>
@@ -349,7 +349,7 @@
             <uSurpInc>0</uSurpInc>
             <VariousControls>
               <MiscControls>--c99 --gnu </MiscControls>
-              <Define>ZC_MODULE_VERSION=0 ZC_MODULE_TYPE=1 ZC_MODULE_DEV</Define>
+              <Define>ZC_MODULE_VERSION=0 ZC_MODULE_TYPE=9 ZC_MODULE_DEV xTEST_ADDR ZC_EASY_UART</Define>
               <Undefine></Undefine>
               <IncludePath>..\..\..\Src\Drivers;..\..\..\Src\Drivers\dma;..\..\..\Src\Drivers\efuse;..\..\..\Src\Drivers\flash;..\..\..\Src\Drivers\gpio;..\..\..\Src\Drivers\hspi;..\..\..\Src\Drivers\litepoint;..\..\..\Src\Drivers\spi;..\..\..\Src\Drivers\timer;..\..\..\Src\Drivers\uart;..\..\..\Src\Drivers\watchdog;..\..\..\Src\Misc;..\..\..\Src\Network\lwip1.4.1;..\..\..\Src\Network\lwip1.4.1\include;..\..\..\Src\Network\lwip1.4.1\include\arch;..\..\..\Src\Network\lwip1.4.1\include\ipv4;..\..\..\Src\Network\lwip1.4.1\include\ipv4\lwip;..\..\..\Src\Network\lwip1.4.1\include\lwip;..\..\..\Src\Network\lwip1.4.1\include\netif;..\..\..\Src\OS\uCOS-II\ports;..\..\..\Src\OS\uCOS-II\source;..\..\..\Src\Wlan\Driver;..\..\..\Src\Wlan\Supplicant;..\..\..\Include;..\..\..\Src\Inc;..\..\..\Src\Sys;..\..\..\Src\Network\api;..\..\..\App\wm_atcmd;..\..\..\App\demo;..\..\..\Src\Common\Params;..\..\..\Src\Drivers\litepoint;..\..\..\App\dhcpserver;..\..\..\App\dnsserver;..\..\..\App\matrixssl;..\..\..\App\matrixssl\crypto;..\..\..\App\web;..\..\..\Src\OS\RTOS\include;..\..\..\App\cloud;..\..\..\App\cJSON;..\..\..\App\Adapter;..\..\..\App\Adapter\AC\inc;..\..\..\App\Adapter\aes;..\..\..\App\Adapter\ZC\inc\tropicssl;..\..\..\App\Adapter\ZC\inc\zc</IncludePath>
             </VariousControls>

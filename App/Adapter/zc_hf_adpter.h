@@ -45,7 +45,6 @@ extern "C" {
 void HF_Init(void);
 void HF_WakeUp(void);
 void HF_Sleep(void);
-void HF_ReadDataFromFlash(void);
 void HF_BcInit(void);
 
 #ifdef __cplusplus

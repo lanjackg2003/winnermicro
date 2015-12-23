@@ -11,6 +11,7 @@
 #include <zc_timer.h>
 #include <zc_module_interface.h>
 #include <zc_hf_adpter.h>
+#include <ac_api.h>
 #include <stdlib.h>
 #include "errno.h"
 #include "wm_osal.h"
@@ -58,20 +59,6 @@ OS_STK TaskHFCloudfuncStk[TASK_HF_Cloudfunc_STK_SIZE];        /* Tasks stacks */
 u32 g_u32session_id;
 
 extern tls_os_queue_t *App_R_Q;
-//extern tls_os_queue_t *App_S_Q;
-/*************************************************
-* Function: HF_ReadRegisterInfoFromFlash
-* Description:
-* Author: cxy
-* Returns:
-* Parameter:
-* History:
-*************************************************/
-void HF_ReadRegisterInfoFromFlash(void)
-{
-    //read register info
-    tls_fls_read(USER_FLASH_PARAM2_ADDR, (u8 *)(&g_struRegisterInfo), sizeof(ZC_RegisterInfo));
-}
 /*************************************************
 * Function: HF_ReadDataFromFlash
 * Description:
@@ -80,22 +67,11 @@ void HF_ReadRegisterInfoFromFlash(void)
 * Parameter:
 * History:
 *************************************************/
-void HF_ReadDataFromFlash(void)
+void HF_ReadDataFromFlash(u8 *pu8Data, u16 u16Len)
 {
-    u32 u32MagicFlag = 0xFFFFFFFF;
 
-    tls_fls_read(USER_FLASH_PARAM1_ADDR, (u8 *)(&u32MagicFlag), 4);
-    if (ZC_MAGIC_FLAG == u32MagicFlag)
-    {
-        ZC_Printf("flash para\n");
-        tls_fls_read(USER_FLASH_PARAM1_ADDR, (u8 *)(&g_struZcConfigDb), sizeof(ZC_ConfigDB));
-    }
-    else
-    {
-        ZC_Printf("no para, use default\n");
-    }
+    tls_fls_read(USER_FLASH_PARAM1_ADDR, pu8Data, u16Len);
 }
-
 /*************************************************
 * Function: HF_WriteDataToFlash
 * Description:
@@ -264,14 +240,7 @@ u32 HF_FirmwareUpdate(u8 *pu8FileData, u32 u32Offset, u32 u32DataLen)
 u32 HF_SendDataToMoudle(u8 *pu8Data, u16 u16DataLen)
 {
 #ifdef ZC_MODULE_DEV
-    tls_os_status_t Status;
-    u8*msg  = tls_mem_alloc(u16DataLen);
-    MEMCPY(msg,pu8Data,u16DataLen);
-    Status = tls_os_queue_send(App_R_Q, msg, u16DataLen);
-    if(Status)
-    {
-        ZC_Printf("fengq: send message error!\n");
-    }
+    AC_RecvMessage((ZC_MessageHead *)pu8Data);
 #else
   	u8 u8MagicFlag[4] = {0x02,0x03,0x04,0x05};
     tls_uart_tx((char*)u8MagicFlag,4); 
@@ -291,8 +260,6 @@ u32 HF_SendDataToMoudle(u8 *pu8Data, u16 u16DataLen)
 *************************************************/
 void HF_Rest(void)
 {
-    g_struZcConfigDb.struSwitchInfo.u32ServerAddrConfig = 0;
-    HF_WriteDataToFlash((u8*)&g_struZcConfigDb, sizeof(ZC_ConfigDB));
     tls_wifi_set_oneshot_flag(1);
 }
 /*************************************************
@@ -395,7 +362,6 @@ void HF_CloudRecvfunc(void* arg)
             u32ActiveFlag = 1;
         }
     }
-
 
     if (0 == u32ActiveFlag)
     {
@@ -611,7 +577,7 @@ u32 HF_ListenClient(PTC_Connection *pstruConnection)
         return ZC_RET_ERROR;
     }
 
-    if (listen(fd, TCP_DEFAULT_LISTEN_BACKLOG) < 0)
+    if (listen(fd, 4) < 0)
     {
         closesocket(fd);
         return ZC_RET_ERROR;
@@ -714,6 +680,7 @@ void HF_Cloudfunc(void* arg)
 void HF_Init()
 {
     tls_os_status_t status;
+
     g_struHfAdapter.pfunConnectToCloud = HF_ConnectToCloud;
     g_struHfAdapter.pfunListenClient = HF_ListenClient;
     g_struHfAdapter.pfunSendTcpData = HF_SendTcpData;
@@ -725,6 +692,7 @@ void HF_Init()
 
     g_struHfAdapter.pfunRest = HF_Rest;
     g_struHfAdapter.pfunWriteFlash = HF_WriteDataToFlash;
+    g_struHfAdapter.pfunReadFlash = HF_ReadDataFromFlash;
     g_struHfAdapter.pfunSendUdpData = HF_SendUdpData;
     g_struHfAdapter.pfunGetMac = HF_GetMac;
     g_struHfAdapter.pfunReboot = HF_Reboot;
@@ -741,7 +709,7 @@ void HF_Init()
     status = tls_os_task_create(NULL, NULL, HF_Cloudfunc, (void *)0,
                            (void *)TaskHFCloudfuncStk, TASK_HF_Cloudfunc_STK_SIZE * sizeof(u32),
                             50, 0);
-   ZC_Printf("MT Init\n"); 
+    ZC_Printf("MT Init\n"); 
     if(status)
     {
         ZC_Printf("fengq: create HF_Cloudfunc task error!\n");
@@ -753,6 +721,7 @@ void HF_Init()
         ZC_Printf("fengq: create timer mutex error!\n");
     } 
 }
+
 /*************************************************
 * Function: HF_WakeUp
 * Description:
@@ -806,6 +775,18 @@ void HF_Sleep()
     g_struUartBuffer.u32RecvLen = 0;
 }
 
+/*************************************************
+* Function: AC_UartSend
+* Description: 
+* Author: cxy 
+* Returns: 
+* Parameter: 
+* History:
+*************************************************/
+void AC_UartSend(u8* inBuf, u32 datalen)
+{
+    tls_uart_tx((char *)inBuf, datalen);  
+}
 /******************************* FILE END ***********************************/
 
 
