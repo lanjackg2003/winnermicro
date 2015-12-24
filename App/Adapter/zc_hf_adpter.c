@@ -20,6 +20,7 @@
 #include "lwip/inet.h"
 #include "wm_include.h"
 #include "wm_fwup.h"
+#include "wm_cpu.h" 
 #define USER_FLASH_PARAM1_ADDR	(0xF8000)
 #define USER_FLASH_PARAM2_ADDR	(0xF9000)
 
@@ -240,11 +241,17 @@ u32 HF_FirmwareUpdate(u8 *pu8FileData, u32 u32Offset, u32 u32DataLen)
 u32 HF_SendDataToMoudle(u8 *pu8Data, u16 u16DataLen)
 {
 #ifdef ZC_MODULE_DEV
-    AC_RecvMessage((ZC_MessageHead *)pu8Data);
+    //AC_RecvMessage((ZC_MessageHead *)pu8Data);
+    tls_os_status_t Status;
+    Status = tls_os_queue_send(App_R_Q, pu8Data, u16DataLen);
+    if(Status)
+    {
+        ZC_Printf("fengq: send message error!\n");
+    }
 #else
   	u8 u8MagicFlag[4] = {0x02,0x03,0x04,0x05};
-    tls_uart_tx((char*)u8MagicFlag,4); 
-    tls_uart_tx((char *)pu8Data, u16DataLen);  
+    tls_uart_tx_sync((char*)u8MagicFlag,4); 
+    tls_uart_tx_sync((char *)pu8Data, u16DataLen);  
 #endif      
     return ZC_RET_OK;
 }
@@ -785,7 +792,7 @@ void HF_Sleep()
 *************************************************/
 void AC_UartSend(u8* inBuf, u32 datalen)
 {
-    tls_uart_tx((char *)inBuf, datalen);  
+    tls_uart_tx_sync((char *)inBuf, datalen);  
 }
 /******************************* FILE END ***********************************/
 
