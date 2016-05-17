@@ -8,6 +8,5 @@
 *.zip
 *.bak
 *.tmp
-*.lib
 *.crf
 si/*
